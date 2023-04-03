@@ -1,7 +1,7 @@
 ---
-title: Bug Report
+name: Bug Report
 about: 버그에 대한 내용을 작성해 주세요.
-name: "[BUG] "
+title: "[BUG] "
 labels: ''
 assigness: ''
 ---
