@@ -10,11 +10,8 @@ import java.time.LocalDateTime;
 public class ErrorResponse {
 
     private final LocalDateTime timeStamp;
-
     private final String code;
-
     private final int status;
-
     private final String message;
 
     private ErrorResponse(ErrorType errorType) {
