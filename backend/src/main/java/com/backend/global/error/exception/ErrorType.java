@@ -9,6 +9,10 @@ public enum ErrorType {
     UNSUPPORTED_METHOD_TYPE("ERRC002", 405, "지원하지 않는 HTTP 메소드를 호출했습니다."),
     INVALID_INPUT_VALUE("ERRC003", 400, "잘못된 입력 값입니다."),
 
+    BAD_CREDENTIALS("ERRA001", 400, "아이디 또는 비밀번호를 잘못 입력했습니다."),
+    INVALID_TOKEN("ERRA002", 401, "토큰이 유효하지 않습니다."),
+    EXPIRED_TOKEN("ERRA003", 401, "토큰이 만료되었습니다."),
+
     DUPLICATE_NICKNAME("ERRM001", 409, "사용 중인 닉네임입니다."),
     DUPLICATE_USERNAME("ERRM002", 409, "사용 중인 아이디입니다.");
 
