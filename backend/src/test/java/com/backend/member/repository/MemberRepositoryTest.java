@@ -49,6 +49,18 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("아이디로 회원을 조회한다.")
+    void member_findbyUsername_test() {
+        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
+        Member save = memberRepository.save(member);
+
+        Optional<Member> find = memberRepository.findByUsername(save.getUsername());
+
+        assertThat(find).isPresent();
+        assertThat(find.get()).usingRecursiveComparison().isEqualTo(save);
+    }
+
+    @Test
     @DisplayName("닉네임의 존재 여부를 확인한다.")
     void member_existsByNickname_test() {
         Member member = new Member(NICKNAME, USERNAME, PASSWORD);
