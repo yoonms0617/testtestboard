@@ -7,6 +7,7 @@ import com.backend.member.repository.MemberRepository;
 import com.backend.post.domain.Post;
 import com.backend.post.dto.PostDetailResponse;
 import com.backend.post.dto.PostListResponse;
+import com.backend.post.dto.PostUpdateRequest;
 import com.backend.post.dto.PostWriteRequest;
 import com.backend.post.exception.NotFoundPostException;
 import com.backend.post.repository.PostRepository;
@@ -52,6 +53,20 @@ public class PostService {
         Post post = postRepository.findById(postNum)
                 .orElseThrow(() -> new NotFoundPostException(ErrorType.NOT_FOUND_POST));
         return new PostDetailResponse(post);
+    }
+
+    @Transactional
+    public void update(Long postNum, PostUpdateRequest request) {
+        Post post = postRepository.findById(postNum)
+                .orElseThrow(() -> new NotFoundPostException(ErrorType.NOT_FOUND_POST));
+        post.update(request.getTitle(), request.getContent());
+    }
+
+    @Transactional
+    public void delete(Long postNum) {
+        Post post = postRepository.findById(postNum)
+                .orElseThrow(() -> new NotFoundPostException(ErrorType.NOT_FOUND_POST));
+        postRepository.delete(post);
     }
 
 }
