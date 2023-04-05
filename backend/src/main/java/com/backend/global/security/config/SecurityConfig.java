@@ -60,7 +60,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/api/member/signup", "/api/post/detail/**", "/api/post/list").permitAll()
-                        .antMatchers("/api/post/write").hasRole("MEMBER")
+                        .antMatchers("/api/post/write", "/api/post/update/**", "/api/post/delete/**").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 );
         return http.build();
