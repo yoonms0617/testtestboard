@@ -1,7 +1,9 @@
 package com.backend.global.security.config;
 
+import com.backend.global.security.filter.JwtAuthenticationFilter;
 import com.backend.global.security.handler.LoginFailureHandler;
 import com.backend.global.security.handler.LoginSuccessHandler;
+import com.backend.global.security.handler.UnAuthorizedHandler;
 import com.backend.global.security.util.JwtUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,17 +11,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -37,8 +43,13 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .httpBasic().disable()
+                .userDetailsService(userDetailsService)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint())
                 )
                 .formLogin(login -> login
                         .loginProcessingUrl("/api/auth/login")
@@ -47,9 +58,9 @@ public class SecurityConfig {
                         .successHandler(loginSuccessHandler())
                         .failureHandler(loginFailureHandler())
                 )
-                .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/api/member/signup").permitAll()
+                        .antMatchers("/api/member/signup", "/api/post/detail/**", "/api/post/list").permitAll()
+                        .antMatchers("/api/post/write").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 );
         return http.build();
@@ -63,6 +74,16 @@ public class SecurityConfig {
     @Bean
     public AuthenticationFailureHandler loginFailureHandler() {
         return new LoginFailureHandler(objectMapper);
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new UnAuthorizedHandler(objectMapper);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, authenticationEntryPoint());
     }
 
 }

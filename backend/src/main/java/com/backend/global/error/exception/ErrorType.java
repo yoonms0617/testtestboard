@@ -2,6 +2,8 @@ package com.backend.global.error.exception;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum ErrorType {
 
@@ -14,7 +16,10 @@ public enum ErrorType {
     EXPIRED_TOKEN("ERRA003", 401, "토큰이 만료되었습니다."),
 
     DUPLICATE_NICKNAME("ERRM001", 409, "사용 중인 닉네임입니다."),
-    DUPLICATE_USERNAME("ERRM002", 409, "사용 중인 아이디입니다.");
+    DUPLICATE_USERNAME("ERRM002", 409, "사용 중인 아이디입니다."),
+    NOT_FOUND_MEMBER("ERRM003", 404, "회원을 찾을 수 없습니다."),
+
+    NOT_FOUND_POST("ERRP001", 404, "게시글을 찾을 수 없습니다.");
 
     private final String code;
     private final int status;
@@ -24,6 +29,13 @@ public enum ErrorType {
         this.code = code;
         this.status = status;
         this.message = message;
+    }
+
+    public static ErrorType findByCode(String code) {
+        return Arrays.stream(ErrorType.values())
+                .filter(errorType -> errorType.getCode().equals(code))
+                .findFirst()
+                .orElse(UNSUPPORTED_ERROR_TYPE);
     }
 
 }
