@@ -28,7 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer";
     private static final String[] WHITE_LIST = {
-            "/api/member/signup", "/api/auth/login", "/api/post/detail", "/api/post/list"
+            "/api/auth/login",
+            "/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists",
+            "/api/post/detail", "/api/post/list"
     };
 
     private final JwtUtil jwtUtil;

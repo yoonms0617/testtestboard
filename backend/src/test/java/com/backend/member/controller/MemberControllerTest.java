@@ -41,8 +41,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,6 +110,34 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value(errorType.getCode()))
                 .andExpect(jsonPath("$.status").value(errorType.getStatus()))
                 .andExpect(jsonPath("$.message").value(errorType.getMessage()));
+    }
+
+    @Test
+    @DisplayName("닉네임이 중복되지 않는다.")
+    void exists_nickname_request_test() throws Exception {
+        willDoNothing().given(memberService).existsNickname(anyString());
+
+        ResultActions resultActions = mockMvc.perform(get("/api/member/nickname/exists")
+                .param("nickname", NICKNAME));
+
+        resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("Y"));
+    }
+
+    @Test
+    @DisplayName("아이디가 중복되지 않는다.")
+    void exists_username_request_test() throws Exception {
+        willDoNothing().given(memberService).existsUsername(anyString());
+
+        ResultActions resultActions = mockMvc.perform(get("/api/member/username/exists")
+                .param("username", USERNAME));
+
+        resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("Y"));
     }
 
     @Test
