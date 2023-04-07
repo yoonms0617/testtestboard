@@ -55,7 +55,6 @@ public class SecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(corsConfigurationSource())
                 )
-                .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -71,7 +70,7 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/api/member/signup", "/api/post/detail/**", "/api/post/list").permitAll()
+                        .antMatchers("/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists", "/api/post/detail/**", "/api/post/list").permitAll()
                         .antMatchers("/api/post/write", "/api/post/update/**", "/api/post/delete/**").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 );

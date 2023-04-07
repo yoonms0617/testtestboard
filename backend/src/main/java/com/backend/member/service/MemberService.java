@@ -22,12 +22,8 @@ public class MemberService {
 
     @Transactional
     public void signup(MemberSignupRequest request) {
-        if (memberRepository.existsByNickname(request.getNickname())) {
-            throw new DuplicateNicknameException(ErrorType.DUPLICATE_NICKNAME);
-        }
-        if (memberRepository.existsByUsername(request.getUsername())) {
-            throw new DuplicateUsernameException(ErrorType.DUPLICATE_USERNAME);
-        }
+        existsNickname(request.getNickname());
+        existsUsername(request.getUsername());
         String encoded = passwordEncoder.encode(request.getPassword());
         Member member = Member.builder()
                 .nickname(request.getNickname())
@@ -35,6 +31,20 @@ public class MemberService {
                 .password(encoded)
                 .build();
         memberRepository.save(member);
+    }
+
+    @Transactional(readOnly = true)
+    public void existsNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new DuplicateNicknameException(ErrorType.DUPLICATE_NICKNAME);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void existsUsername(String username) {
+        if (memberRepository.existsByUsername(username)) {
+            throw new DuplicateUsernameException(ErrorType.DUPLICATE_USERNAME);
+        }
     }
 
 }
