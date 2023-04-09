@@ -1,10 +1,17 @@
 <template>
   <div class="container">
-    <header class="d-flex justify-content-center py-3 mb-4 border-bottom">
-      <router-link to="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-        <span class="fs-4">게시판</span>
+    <header class="d-flex justify-content-between py-4 border-bottom">
+      <router-link to="/" class="d-flex align-items-center text-decoration-none">
+        <span class="fs-4 text-black">
+          <i class="bi bi-pencil-square">게시판</i>
+        </span>
       </router-link>
-      <ul class="nav nav-pills">
+      <ul class="nav nav-pills" v-if="isLogin">
+        <li class="nav-item">
+          <button type="button" class="btn btn-link text-decoration-none" @click="logout">로그아웃</button>
+        </li>
+      </ul>
+      <ul class="nav nav-pills" v-else>
         <li class="nav-item">
           <router-link to="/login" class="nav-link">로그인</router-link>
         </li>
@@ -17,7 +24,19 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "BaseNavigation",
+  computed: {
+    ...mapGetters(["isLogin"]),
+  },
+  methods: {
+    ...mapActions(["clearToken"]),
+    logout() {
+      console.log("logout");
+      this.clearToken();
+    },
+  },
 };
 </script>
