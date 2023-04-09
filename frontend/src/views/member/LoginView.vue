@@ -9,7 +9,7 @@
     <div class="login-form">
       <form @submit.prevent="login">
         <div class="form-floating mb-3">
-          <input v-model="username" type="text" class="form-control" placeholder="아이디" autocomplete="off" required />
+          <input v-model="username" ref="username" type="text" class="form-control" placeholder="아이디" autocomplete="off" required />
           <label>아이디</label>
         </div>
         <div class="form-floating mb-3">
@@ -39,6 +39,7 @@
 <script>
 import { LOGIN } from "@/api/member";
 import { SERVER_MESSAGE } from "@/constants/message";
+import { mapActions } from "vuex";
 
 export default {
   name: "LoginView",
@@ -50,17 +51,24 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["saveToken"]),
     login() {
       const formData = new FormData();
       formData.append("username", this.username);
       formData.append("password", this.password);
       LOGIN.loginRequest(formData)
-        .then(() => {
+        .then((res) => {
+          const token = {
+            accessToken: res.data.accessToken,
+            refreshToken: res.data.refreshToken,
+          };
+          this.saveToken(token);
           this.$router.replace("/");
         })
         .catch((err) => {
           this.username = "";
           this.password = "";
+          this.$refs.username.focus();
           const errCode = err.response.data.code;
           this.message = SERVER_MESSAGE[errCode];
         });
