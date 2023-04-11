@@ -10,17 +10,21 @@ export default {
 
 <style>
 @font-face {
-  font-family: "LINESeedKR-Bd";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2") format("woff2");
-  font-weight: 700;
+  font-family: "GangwonEdu_OTFBoldA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff") format("woff");
+  font-weight: normal;
   font-style: normal;
 }
 
 * {
-  font-family: "LINESeedKR-Bd", serif;
+  font-family: "GangwonEdu_OTFBoldA", serif;
 }
 
 input {
+  box-shadow: none !important;
+}
+
+textarea {
   box-shadow: none !important;
 }
 </style>

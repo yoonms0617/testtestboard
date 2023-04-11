@@ -3,7 +3,8 @@
     <header class="d-flex justify-content-between py-4 border-bottom">
       <router-link to="/" class="d-flex align-items-center text-decoration-none">
         <span class="fs-4 text-black">
-          <i class="bi bi-pencil-square">게시판</i>
+          <i class="bi bi-pencil-square"></i>
+          &nbsp;게시판
         </span>
       </router-link>
       <ul class="nav nav-pills" v-if="isLogin">
@@ -34,8 +35,8 @@ export default {
   methods: {
     ...mapActions(["clearToken"]),
     logout() {
-      console.log("logout");
       this.clearToken();
+      this.$router.push("/");
     },
   },
 };

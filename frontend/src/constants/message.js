@@ -7,6 +7,9 @@ const CLIENT_MESSAGE = {
   GOOD_USERNAME: "사용 가능한 아이디입니다.",
   GOOD_PASSWORD: "사용 가능한 비밀번호입니다.",
   GOOD_CONFIRM: "비밀번호가 일치합니다.",
+  REQUIRE_LOGIN: "로그인이 필요합니다.",
+  INPUT_POST_TITLE: "제목을 입력해 주세요.",
+  INPUT_POST_CONTNET: "내용을 입력해 주세요.",
 };
 
 const SERVER_MESSAGE = {
@@ -15,7 +18,7 @@ const SERVER_MESSAGE = {
   ERRC003: "잘못된 입력 값입니다.",
   ERRA001: "아이디 또는 비밀번호를 잘못 입력했습니다.",
   ERRM001: "사용 중인 닉네임입니다.",
-  ERRM002: "사용 중인 이메일입니다.",
+  ERRM002: "사용 중인 아이디입니다.",
   ERRM003: "회원을 찾을 수 없습니다.",
 };
 
