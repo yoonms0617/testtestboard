@@ -2,9 +2,11 @@ package com.backend.member.service;
 
 import com.backend.global.error.exception.ErrorType;
 import com.backend.member.domain.Member;
+import com.backend.member.dto.MemberProfileResponse;
 import com.backend.member.dto.MemberSignupRequest;
 import com.backend.member.exception.DuplicateNicknameException;
 import com.backend.member.exception.DuplicateUsernameException;
+import com.backend.member.exception.NotFoundMemberException;
 import com.backend.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +47,13 @@ public class MemberService {
         if (memberRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorType.DUPLICATE_USERNAME);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public MemberProfileResponse profile(String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundMemberException(ErrorType.NOT_FOUND_MEMBER));
+        return new MemberProfileResponse(member);
     }
 
 }

@@ -1,11 +1,15 @@
 package com.backend.member.controller;
 
+import com.backend.global.security.dto.LoginMember;
+import com.backend.member.dto.MemberProfileResponse;
 import com.backend.member.dto.MemberSignupRequest;
 import com.backend.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +42,13 @@ public class MemberController {
     public ResponseEntity<String> existsUsername(@RequestParam("username") String username) {
         memberService.existsUsername(username);
         return ResponseEntity.ok().body("Y");
+    }
+
+    @GetMapping("/profile")
+    @Secured("ROLE_MEMBER")
+    public ResponseEntity<MemberProfileResponse> profile(@AuthenticationPrincipal LoginMember loginMember) {
+        MemberProfileResponse response = memberService.profile(loginMember.getUsername());
+        return ResponseEntity.ok().body(response);
     }
 
 }
