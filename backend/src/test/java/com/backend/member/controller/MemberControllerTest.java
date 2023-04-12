@@ -4,6 +4,7 @@ import com.backend.global.error.exception.ErrorType;
 import com.backend.global.security.config.SecurityConfig;
 import com.backend.global.security.dto.LoginMember;
 import com.backend.global.security.util.JwtUtil;
+import com.backend.member.dto.MemberProfileResponse;
 import com.backend.member.dto.MemberSignupRequest;
 import com.backend.member.exception.DuplicateNicknameException;
 import com.backend.member.exception.DuplicateUsernameException;
@@ -11,6 +12,7 @@ import com.backend.member.service.MemberService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -237,6 +239,52 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value(errorType.getCode()))
                 .andExpect(jsonPath("$.status").value(errorType.getStatus()))
                 .andExpect(jsonPath("$.message").value(errorType.getMessage()));
+    }
+
+    @Test
+    @DisplayName("정상적으로 회원 정보를 조회한다.")
+    void profile_request_test() throws Exception {
+        MemberProfileResponse response = new MemberProfileResponse(NICKNAME, USERNAME);
+        String encoded = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(PASSWORD);
+        LoginMember loginMember = new LoginMember(ID, USERNAME, encoded, ROLE);
+        String accessToken = createAccessToken();
+        Claims claims = createClaims(accessToken);
+
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(loginMember);
+        given(jwtUtil.createAccessToken(anyLong(), anyString(), anyString())).willReturn(accessToken);
+        given(jwtUtil.getPayload(anyString())).willReturn(claims);
+        given(memberService.profile(anyString())).willReturn(response);
+
+        ResultActions resultActions = mockMvc.perform(get("/api/member/profile")
+                .header("Authorization", "Bearer " + accessToken)
+        );
+
+        resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value(response.getNickname()))
+                .andExpect(jsonPath("$.username").value(response.getUsername()));
+    }
+
+    private String createAccessToken() {
+        Date iat = new Date();
+        Date exp = new Date(iat.getTime() + 600000);
+        return Jwts.builder()
+                .setSubject(String.valueOf(1L))
+                .claim("username", "yoonms0617")
+                .claim("role", "ROLE_MEMBER")
+                .setIssuedAt(iat)
+                .setExpiration(exp)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private Claims createClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
 }

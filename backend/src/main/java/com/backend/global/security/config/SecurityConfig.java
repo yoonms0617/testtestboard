@@ -71,7 +71,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists", "/api/post/detail/**", "/api/post/list").permitAll()
-                        .antMatchers("/api/post/write", "/api/post/update/**", "/api/post/delete/**").hasRole("MEMBER")
+                        .antMatchers("/api/member/profile", "/api/post/write", "/api/post/update/**", "/api/post/delete/**").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 );
         return http.build();
