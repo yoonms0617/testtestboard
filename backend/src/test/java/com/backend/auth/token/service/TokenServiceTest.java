@@ -1,5 +1,6 @@
 package com.backend.auth.token.service;
 
+import com.backend.global.security.util.JwtUtil;
 import com.backend.token.domain.Token;
 import com.backend.token.repository.TokenRepository;
 import com.backend.token.service.TokenService;
@@ -26,6 +27,9 @@ class TokenServiceTest {
 
     @Mock
     private TokenRepository tokenRepository;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private TokenService tokenService;

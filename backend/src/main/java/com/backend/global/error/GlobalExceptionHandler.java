@@ -5,6 +5,7 @@ import com.backend.global.error.exception.BaseException;
 import com.backend.global.error.exception.ErrorType;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,8 +27,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handle() {
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException() {
         ErrorResponse response = ErrorResponse.of(ErrorType.UNSUPPORTED_METHOD_TYPE);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handlerAuthenticationException(AuthenticationException e) {
+        ErrorType errorType = ErrorType.findByCode(e.getMessage());
+        ErrorResponse response = ErrorResponse.of(errorType);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
