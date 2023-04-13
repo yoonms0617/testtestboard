@@ -10,6 +10,7 @@ import com.backend.member.exception.DuplicateNicknameException;
 import com.backend.member.exception.DuplicateUsernameException;
 import com.backend.member.service.MemberService;
 
+import com.backend.token.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -68,6 +69,9 @@ class MemberControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private TokenService tokenService;
 
     @MockBean
     private UserDetailsService userDetailsService;

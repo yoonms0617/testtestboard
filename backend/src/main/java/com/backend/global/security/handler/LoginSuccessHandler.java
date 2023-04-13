@@ -3,6 +3,7 @@ package com.backend.global.security.handler;
 import com.backend.global.security.dto.LoginMember;
 import com.backend.global.security.dto.LoginResponse;
 import com.backend.global.security.util.JwtUtil;
+import com.backend.token.service.TokenService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final TokenService tokenService;
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
@@ -26,10 +28,19 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         LoginMember loginMember = (LoginMember) authentication.getPrincipal();
+        LoginResponse loginResponse = loginResponse(loginMember);
+        syncRefreshToken(loginMember, loginResponse.getRefreshToken());
+        objectMapper.writeValue(response.getOutputStream(), loginResponse);
+    }
+
+    private LoginResponse loginResponse(LoginMember loginMember) {
         String accessToken = jwtUtil.createAccessToken(loginMember.getId(), loginMember.getUsername(), loginMember.getRole());
         String refreshToken = jwtUtil.createRefreshToken(loginMember.getId(), loginMember.getUsername(), loginMember.getRole());
-        LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
-        objectMapper.writeValue(response.getOutputStream(), loginResponse);
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    private void syncRefreshToken(LoginMember loginMember, String refreshToken) {
+        tokenService.syncRefreshToken(loginMember.getId(), loginMember.getUsername(), refreshToken);
     }
 
 }

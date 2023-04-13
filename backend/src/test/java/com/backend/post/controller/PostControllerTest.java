@@ -10,6 +10,7 @@ import com.backend.post.dto.PostWriteRequest;
 import com.backend.post.exception.NotFoundPostException;
 import com.backend.post.service.PostService;
 
+import com.backend.token.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -66,6 +67,9 @@ class PostControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private TokenService tokenService;
 
     @MockBean
     private UserDetailsService userDetailsService;
