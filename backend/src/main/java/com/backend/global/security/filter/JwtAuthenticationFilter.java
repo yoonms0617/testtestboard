@@ -30,7 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String[] WHITE_LIST = {
             "/api/auth/login",
             "/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists",
-            "/api/post/detail", "/api/post/list"
+            "/api/post/detail", "/api/post/list",
+            "/api/token/reissue"
     };
 
     private final JwtUtil jwtUtil;

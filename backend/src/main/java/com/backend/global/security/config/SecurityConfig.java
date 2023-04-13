@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists", "/api/post/detail/**", "/api/post/list").permitAll()
+                        .antMatchers("/api/member/signup", "/api/member/nickname/exists", "/api/member/username/exists", "/api/post/detail/**", "/api/post/list", "/api/token/reissue").permitAll()
                         .antMatchers("/api/member/profile", "/api/post/write", "/api/post/update/**", "/api/post/delete/**").hasRole("MEMBER")
                         .anyRequest().authenticated()
                 );
