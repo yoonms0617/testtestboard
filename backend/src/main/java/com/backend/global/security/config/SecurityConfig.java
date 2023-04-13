@@ -5,6 +5,7 @@ import com.backend.global.security.handler.LoginFailureHandler;
 import com.backend.global.security.handler.LoginSuccessHandler;
 import com.backend.global.security.handler.UnAuthorizedHandler;
 import com.backend.global.security.util.JwtUtil;
+import com.backend.token.service.TokenService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,6 +37,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
     private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
@@ -79,7 +81,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(jwtUtil, objectMapper);
+        return new LoginSuccessHandler(tokenService, jwtUtil, objectMapper);
     }
 
     @Bean

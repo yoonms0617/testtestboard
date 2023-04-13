@@ -5,7 +5,6 @@ import com.backend.global.security.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
 
-import io.jsonwebtoken.lang.Strings;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(AUTHORIZATION_HEADER);
-        if (Strings.hasText(header) && header.startsWith(BEARER_PREFIX)) {
+        if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
             return header.substring(BEARER_PREFIX.length()).trim();
         }
         return null;
