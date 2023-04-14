@@ -20,14 +20,17 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
+import static com.backend.support.fixture.MemberFixture.NICKNAME;
+import static com.backend.support.fixture.MemberFixture.USERNAME;
+import static com.backend.support.fixture.MemberFixture.ENCODED_PASSWORD;
+import static com.backend.support.fixture.PostFixture.CONTENT;
+import static com.backend.support.fixture.PostFixture.TITLE;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(JpaAuditConfig.class)
 class PostRepositoryTest {
-
-    private static final String TITLE = "title";
-    private static final String CONTENT = "content";
 
     @Autowired
     private PostRepository postRepository;
@@ -39,14 +42,14 @@ class PostRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        member = new Member("민수쿤", "yoonms0617", "1q2w3e4r!");
+        member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
         memberRepository.save(member);
     }
 
     @Test
     @DisplayName("게시글을 저장한다.")
     void post_save_test() {
-        Post post = new Post(TITLE, member.getNickname(), CONTENT, member);
+        Post post = new Post(TITLE, NICKNAME, CONTENT, member);
 
         Post save = postRepository.save(post);
 
@@ -54,34 +57,35 @@ class PostRepositoryTest {
     }
 
     @Test
+    @DisplayName("식별자로 게시글을 조회한다.")
+    void post_findById_test() {
+        Post post = new Post(TITLE, NICKNAME, CONTENT, member);
+        Post expected = postRepository.save(post);
+
+        Optional<Post> actual = postRepository.findById(expected.getId());
+
+        assertThat(actual).isPresent();
+        assertThat(actual.get()).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("게시글 목록을 조회한다.")
     void post_findAll_test() {
-        Post postA = new Post(TITLE, member.getNickname(), CONTENT, member);
-        Post postB = new Post(TITLE, member.getNickname(), CONTENT, member);
-        Post postC = new Post(TITLE, member.getNickname(), CONTENT, member);
-        Post postD = new Post(TITLE, member.getNickname(), CONTENT, member);
-        Post postE = new Post(TITLE, member.getNickname(), CONTENT, member);
+        Post postA = new Post(TITLE, NICKNAME, CONTENT, member);
+        Post postB = new Post(TITLE, NICKNAME, CONTENT, member);
+        Post postC = new Post(TITLE, NICKNAME, CONTENT, member);
+        Post postD = new Post(TITLE, NICKNAME, CONTENT, member);
+        Post postE = new Post(TITLE, NICKNAME, CONTENT, member);
+
         postRepository.saveAll(List.of(postA, postB, postC, postD, postE));
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id");
         Page<Post> posts = postRepository.findAll(pageable);
 
         assertThat(posts.getContent()).containsExactly(postE, postD, postC, postB, postA);
         assertThat(posts.getContent().size()).isEqualTo(5);
         assertThat(posts.getTotalElements()).isEqualTo(5);
         assertThat(posts.getNumber()).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("식별자로 게시글을 조회한다.")
-    void post_findById_test() {
-        Post post = new Post(TITLE, member.getNickname(), CONTENT, member);
-        Post save = postRepository.save(post);
-
-        Optional<Post> find = postRepository.findById(save.getId());
-
-        assertThat(find).isPresent();
-        assertThat(find.get()).usingRecursiveComparison().isEqualTo(save);
     }
 
 }

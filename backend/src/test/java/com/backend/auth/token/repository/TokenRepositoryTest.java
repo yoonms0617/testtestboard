@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 
+import static com.backend.support.fixture.MemberFixture.MEMBER_ID;
+import static com.backend.support.fixture.MemberFixture.USERNAME;
+import static com.backend.support.fixture.JwtFixture.REFRESH_TOKEN;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(JpaAuditConfig.class)
 class TokenRepositoryTest {
-
-    private static final Long MEMBER_ID = 1L;
-    private static final String USERNAME = "yoonms0617";
-    private static final String REFRESH_TOKEN = "refreshToken";
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -40,12 +40,12 @@ class TokenRepositoryTest {
     @DisplayName("회원 아이디로 토큰을 조회한다.")
     void token_username_test() {
         Token token = new Token(USERNAME, REFRESH_TOKEN, MEMBER_ID);
-        Token save = tokenRepository.save(token);
+        Token expected = tokenRepository.save(token);
 
-        Optional<Token> find = tokenRepository.findByUsername(USERNAME);
+        Optional<Token> actual = tokenRepository.findByUsername(USERNAME);
 
-        assertThat(find).isPresent();
-        assertThat(find.get()).usingRecursiveComparison().isEqualTo(save);
+        assertThat(actual).isPresent();
+        assertThat(actual.get()).usingRecursiveComparison().isEqualTo(expected);
     }
 
 }

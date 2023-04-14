@@ -9,9 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import java.util.Optional;
+
+import static com.backend.support.fixture.MemberFixture.ENCODED_PASSWORD;
+import static com.backend.support.fixture.MemberFixture.NICKNAME;
+import static com.backend.support.fixture.MemberFixture.USERNAME;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,17 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(JpaAuditConfig.class)
 class MemberRepositoryTest {
 
-    private static final String NICKNAME = "민수쿤";
-    private static final String USERNAME = "yoonms0617";
-    private static final String PASSWORD = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("1q2w3e4r!");
-
     @Autowired
     private MemberRepository memberRepository;
 
     @Test
     @DisplayName("회원을 저장한다.")
     void member_save_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
+        Member member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
 
         Long id = memberRepository.save(member).getId();
 
@@ -39,34 +38,34 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("식별자로 회원을 조회한다.")
     void member_findById_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
-        Member save = memberRepository.save(member);
+        Member member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
+        Member expected = memberRepository.save(member);
 
-        Optional<Member> find = memberRepository.findById(save.getId());
+        Optional<Member> actual = memberRepository.findById(expected.getId());
 
-        assertThat(find).isPresent();
-        assertThat(find.get()).usingRecursiveComparison().isEqualTo(save);
+        assertThat(actual).isPresent();
+        assertThat(actual.get()).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
     @DisplayName("아이디로 회원을 조회한다.")
     void member_findbyUsername_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
-        Member save = memberRepository.save(member);
+        Member member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
+        Member expected = memberRepository.save(member);
 
-        Optional<Member> find = memberRepository.findByUsername(save.getUsername());
+        Optional<Member> actual = memberRepository.findByUsername(expected.getUsername());
 
-        assertThat(find).isPresent();
-        assertThat(find.get()).usingRecursiveComparison().isEqualTo(save);
+        assertThat(actual).isPresent();
+        assertThat(actual.get()).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
     @DisplayName("닉네임의 존재 여부를 확인한다.")
     void member_existsByNickname_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
+        Member member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
         memberRepository.save(member);
 
-        boolean exists = memberRepository.existsByNickname(member.getNickname());
+        boolean exists = memberRepository.existsByNickname(NICKNAME);
 
         assertThat(exists).isTrue();
     }
@@ -74,10 +73,10 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("아이디의 존재 여부를 확인한다.")
     void member_existsByUsername_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
+        Member member = new Member(NICKNAME, USERNAME, ENCODED_PASSWORD);
         memberRepository.save(member);
 
-        boolean exists = memberRepository.existsByUsername(member.getUsername());
+        boolean exists = memberRepository.existsByUsername(USERNAME);
 
         assertThat(exists).isTrue();
     }
