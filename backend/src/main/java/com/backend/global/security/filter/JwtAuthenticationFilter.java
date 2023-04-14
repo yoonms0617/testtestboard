@@ -61,9 +61,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Authentication createAuth(Claims payload) {
         Long id = Long.valueOf(payload.getSubject());
+        String nickname = String.valueOf(payload.get("nickname"));
         String username = String.valueOf(payload.get("username"));
         String role = String.valueOf(payload.get("role"));
-        LoginMember loginMember = new LoginMember(id, username, "", role);
+        LoginMember loginMember = new LoginMember(id, nickname, username, "", role);
         return UsernamePasswordAuthenticationToken.authenticated(loginMember, null, loginMember.getAuthorities());
     }
 

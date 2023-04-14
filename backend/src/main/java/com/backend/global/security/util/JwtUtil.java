@@ -37,19 +37,20 @@ public class JwtUtil {
         this.refreshTokenInMilliseconds = refreshTokenInMilliseconds;
     }
 
-    public String createAccessToken(Long id, String username, String role) {
-        return createToken(id, username, role, accessTokenInMilliseconds);
+    public String createAccessToken(Long id, String nickname, String username, String role) {
+        return createToken(id, nickname, username, role, accessTokenInMilliseconds);
     }
 
-    public String createRefreshToken(Long id, String username, String role) {
-        return createToken(id, username, role, refreshTokenInMilliseconds);
+    public String createRefreshToken(Long id, String nickname, String username, String role) {
+        return createToken(id, nickname, username, role, refreshTokenInMilliseconds);
     }
 
-    private String createToken(Long id, String username, String role, long tokenInMilliseconds) {
+    private String createToken(Long id, String nickname, String username, String role, long tokenInMilliseconds) {
         Date iat = new Date();
         Date exp = new Date(iat.getTime() + tokenInMilliseconds);
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
+                .claim("nickname", nickname)
                 .claim("username", username)
                 .claim("role", role)
                 .setIssuedAt(iat)

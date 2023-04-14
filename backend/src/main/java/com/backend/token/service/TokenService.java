@@ -54,9 +54,10 @@ public class TokenService {
 
     private String createNewAccessToken(Claims payload) {
         Long memberId = Long.valueOf(payload.getSubject());
+        String nickname = String.valueOf(payload.get("nickname"));
         String username = String.valueOf(payload.get("username"));
         String role = String.valueOf(payload.get("role"));
-        return jwtUtil.createAccessToken(memberId, username, role);
+        return jwtUtil.createAccessToken(memberId, nickname, username, role);
     }
 
 }
