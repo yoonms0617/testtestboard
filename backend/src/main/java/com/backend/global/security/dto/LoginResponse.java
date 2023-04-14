@@ -1,17 +1,31 @@
 package com.backend.global.security.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class LoginResponse {
 
-    private String accessToken;
+    private final String nickname;
 
-    private String refreshToken;
+    private final Token token;
+
+    public LoginResponse(String nickname, String accessToken, String refreshToken) {
+        this.nickname = nickname;
+        this.token = new Token(accessToken, refreshToken);
+    }
+
+    @Getter
+    private static class Token {
+
+        private final String accessToken;
+
+        private final String refreshToken;
+
+        public Token(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+
+    }
 
 }

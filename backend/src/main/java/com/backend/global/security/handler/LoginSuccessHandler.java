@@ -28,15 +28,19 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         LoginMember loginMember = (LoginMember) authentication.getPrincipal();
-        LoginResponse loginResponse = loginResponse(loginMember);
-        syncRefreshToken(loginMember, loginResponse.getRefreshToken());
+        String accessToken = createAccessToken(loginMember);
+        String refreshToken = createRefreshToken(loginMember);
+        LoginResponse loginResponse = new LoginResponse(loginMember.getNickname(), accessToken, refreshToken);
+        syncRefreshToken(loginMember, refreshToken);
         objectMapper.writeValue(response.getOutputStream(), loginResponse);
     }
 
-    private LoginResponse loginResponse(LoginMember loginMember) {
-        String accessToken = jwtUtil.createAccessToken(loginMember.getId(), loginMember.getUsername(), loginMember.getRole());
-        String refreshToken = jwtUtil.createRefreshToken(loginMember.getId(), loginMember.getUsername(), loginMember.getRole());
-        return new LoginResponse(accessToken, refreshToken);
+    private String createAccessToken(LoginMember loginMember) {
+        return jwtUtil.createAccessToken(loginMember.getId(), loginMember.getNickname(), loginMember.getUsername(), loginMember.getRole());
+    }
+
+    private String createRefreshToken(LoginMember loginMember) {
+        return jwtUtil.createRefreshToken(loginMember.getId(), loginMember.getNickname(), loginMember.getUsername(), loginMember.getRole());
     }
 
     private void syncRefreshToken(LoginMember loginMember, String refreshToken) {
