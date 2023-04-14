@@ -9,8 +9,8 @@ import com.backend.member.dto.MemberSignupRequest;
 import com.backend.member.exception.DuplicateNicknameException;
 import com.backend.member.exception.DuplicateUsernameException;
 import com.backend.member.service.MemberService;
-
 import com.backend.token.service.TokenService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -190,10 +190,11 @@ class MemberControllerTest {
     @DisplayName("정상적으로 로그인에 성공하면 Access Token과 Refresh Token을 응답한다.")
     void login_request_test() throws Exception {
         String encoded = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(PASSWORD);
-        LoginMember loginMember = new LoginMember(ID, USERNAME, encoded, ROLE);
+        LoginMember loginMember = new LoginMember(ID, NICKNAME, USERNAME, encoded, ROLE);
         Date iat = new Date();
         String accessToken = Jwts.builder()
                 .setSubject(String.valueOf(ID))
+                .claim("nickname", NICKNAME)
                 .claim("username", USERNAME)
                 .claim("role", ROLE)
                 .setIssuedAt(iat)
@@ -202,6 +203,7 @@ class MemberControllerTest {
                 .compact();
         String refreshToken = Jwts.builder()
                 .setSubject(String.valueOf(ID))
+                .claim("nickname", NICKNAME)
                 .claim("username", USERNAME)
                 .claim("role", ROLE)
                 .setIssuedAt(iat)
@@ -210,8 +212,8 @@ class MemberControllerTest {
                 .compact();
 
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(loginMember);
-        given(jwtUtil.createAccessToken(anyLong(), anyString(), anyString())).willReturn(accessToken);
-        given(jwtUtil.createRefreshToken(anyLong(), anyString(), anyString())).willReturn(refreshToken);
+        given(jwtUtil.createAccessToken(anyLong(), anyString(), anyString(), anyString())).willReturn(accessToken);
+        given(jwtUtil.createRefreshToken(anyLong(), anyString(), anyString(), anyString())).willReturn(refreshToken);
 
         ResultActions resultActions = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -221,8 +223,9 @@ class MemberControllerTest {
         resultActions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value(accessToken))
-                .andExpect(jsonPath("$.refreshToken").value(refreshToken));
+                .andExpect(jsonPath("$.nickname").value(NICKNAME))
+                .andExpect(jsonPath("$.token.accessToken").value(accessToken))
+                .andExpect(jsonPath("$.token.refreshToken").value(refreshToken));
     }
 
     @Test
@@ -250,12 +253,12 @@ class MemberControllerTest {
     void profile_request_test() throws Exception {
         MemberProfileResponse response = new MemberProfileResponse(NICKNAME, USERNAME);
         String encoded = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(PASSWORD);
-        LoginMember loginMember = new LoginMember(ID, USERNAME, encoded, ROLE);
+        LoginMember loginMember = new LoginMember(ID, NICKNAME, USERNAME, encoded, ROLE);
         String accessToken = createAccessToken();
         Claims claims = createClaims(accessToken);
 
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(loginMember);
-        given(jwtUtil.createAccessToken(anyLong(), anyString(), anyString())).willReturn(accessToken);
+        given(jwtUtil.createAccessToken(anyLong(), anyString(), anyString(), anyString())).willReturn(accessToken);
         given(jwtUtil.getPayload(anyString())).willReturn(claims);
         given(memberService.profile(anyString())).willReturn(response);
 

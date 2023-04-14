@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class JwtUtilTest {
 
     private static final Long ID = 1L;
+    private static final String NICKNAME = "민수쿤";
     private static final String USERNAME = "yoonms0617";
     private static final String ROLE = "ROLE_MEMBER";
 
@@ -39,7 +40,7 @@ public class JwtUtilTest {
     @Test
     @DisplayName("Access Token을 생성한다.")
     void create_access_token_test() {
-        String accessToken = jwtUtil.createAccessToken(ID, USERNAME, ROLE);
+        String accessToken = jwtUtil.createAccessToken(ID, NICKNAME, USERNAME, ROLE);
 
         assertThat(accessToken).isNotNull();
     }
@@ -47,7 +48,7 @@ public class JwtUtilTest {
     @Test
     @DisplayName("Refresh Token을 생성한다.")
     void create_refresh_token_test() {
-        String refreshToken = jwtUtil.createRefreshToken(ID, USERNAME, ROLE);
+        String refreshToken = jwtUtil.createRefreshToken(ID, NICKNAME, USERNAME, ROLE);
 
         assertThat(refreshToken).isNotNull();
     }
@@ -55,7 +56,7 @@ public class JwtUtilTest {
     @Test
     @DisplayName("올바른 Access Token 정보로 Payload를 조회한다.")
     void payload_from_accessToken() {
-        String accessToken = jwtUtil.createAccessToken(ID, USERNAME, ROLE);
+        String accessToken = jwtUtil.createAccessToken(ID, NICKNAME, USERNAME, ROLE);
 
         Claims payload = jwtUtil.getPayload(accessToken);
 
@@ -68,7 +69,7 @@ public class JwtUtilTest {
     @Test
     @DisplayName("올바른 Refresh Token 정보로 Payload를 조회한다.")
     void payload_from_refreshToken() {
-        String refreshToken = jwtUtil.createRefreshToken(ID, USERNAME, ROLE);
+        String refreshToken = jwtUtil.createRefreshToken(ID, NICKNAME, USERNAME, ROLE);
 
         Claims payload = jwtUtil.getPayload(refreshToken);
 
@@ -81,7 +82,7 @@ public class JwtUtilTest {
     @Test
     @DisplayName("토큰이 유효하지 않는 경우 예외가 발생한다.")
     void invalid_token_test() {
-        String invalidToken = null;
+        String invalidToken = "";
 
         assertThatThrownBy(() -> jwtUtil.validatedToken(invalidToken))
                 .isInstanceOf(InvalidTokenException.class);

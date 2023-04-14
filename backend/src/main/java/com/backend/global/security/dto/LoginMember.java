@@ -10,13 +10,16 @@ public class LoginMember extends User {
 
     private final Long id;
 
+    private final String nickname;
+
     private final String username;
 
     private final String role;
 
-    public LoginMember(Long id, String username, String password, String role) {
+    public LoginMember(Long id, String nickname, String username, String password, String role) {
         super(username, password, AuthorityUtils.createAuthorityList(role));
         this.id = id;
+        this.nickname = nickname;
         this.username = username;
         this.role = role;
     }
