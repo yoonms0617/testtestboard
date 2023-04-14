@@ -1,13 +1,11 @@
 package com.backend.post.service;
 
 import com.backend.global.error.exception.ErrorType;
-import com.backend.member.domain.Member;
 import com.backend.member.exception.NotFoundMemberException;
 import com.backend.member.repository.MemberRepository;
 import com.backend.post.domain.Post;
 import com.backend.post.dto.PostDetailResponse;
 import com.backend.post.dto.PostListResponse;
-import com.backend.post.dto.PostWriteRequest;
 import com.backend.post.exception.NotFoundPostException;
 import com.backend.post.repository.PostRepository;
 
@@ -28,6 +26,14 @@ import org.springframework.data.domain.Sort;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static com.backend.support.fixture.MemberFixture.MEMBER;
+import static com.backend.support.fixture.MemberFixture.NICKNAME;
+import static com.backend.support.fixture.MemberFixture.USERNAME;
+import static com.backend.support.fixture.PostFixture.CONTENT;
+import static com.backend.support.fixture.PostFixture.POST;
+import static com.backend.support.fixture.PostFixture.TITLE;
+import static com.backend.support.fixture.PostFixture.VALID_POST_WRITE_REQUEST;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -55,14 +61,10 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글을 작성한다.")
     void write_test() {
-        Member member = new Member("민수쿤", "yoonms0617", "1q2w3e4r!");
-        Post post = new Post("title", member.getNickname(), "content", member);
-        PostWriteRequest request = new PostWriteRequest("title", "content");
+        given(memberRepository.findByUsername(anyString())).willReturn(Optional.of(MEMBER));
+        given(postRepository.save(any(Post.class))).willReturn(POST);
 
-        given(memberRepository.findByUsername(anyString())).willReturn(Optional.of(member));
-        given(postRepository.save(any(Post.class))).willReturn(post);
-
-        postService.write(member.getUsername(), request);
+        postService.write(USERNAME, VALID_POST_WRITE_REQUEST);
 
         then(memberRepository).should(atLeastOnce()).findByUsername(anyString());
         then(postRepository).should(atLeastOnce()).save(any(Post.class));
@@ -71,12 +73,9 @@ class PostServiceTest {
     @Test
     @DisplayName("사용자을 찾을 수 없을시 예외가 발생한다.")
     void write_not_found_member_test() {
-        String username = "yoonms0617";
-        PostWriteRequest request = new PostWriteRequest("title", "content");
-
         given(memberRepository.findByUsername(anyString())).willThrow(new NotFoundMemberException(ErrorType.NOT_FOUND_MEMBER));
 
-        assertThatThrownBy(() -> postService.write(username, request))
+        assertThatThrownBy(() -> postService.write(USERNAME, VALID_POST_WRITE_REQUEST))
                 .isInstanceOf(NotFoundMemberException.class);
 
         then(memberRepository).should(atLeastOnce()).findByUsername(anyString());
@@ -86,15 +85,14 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 목록을 조회한다.")
     void list_test() {
-        Member member = new Member("민수쿤", "yoonms0617", "1q2w3e4r!");
         List<Post> posts = Arrays.asList(
-                new Post("title1", member.getNickname(), "content1", member),
-                new Post("title2", member.getNickname(), "content2", member),
-                new Post("title3", member.getNickname(), "content3", member),
-                new Post("title4", member.getNickname(), "content4", member),
-                new Post("title5", member.getNickname(), "content5", member)
+                new Post(TITLE, NICKNAME, CONTENT, MEMBER),
+                new Post(TITLE, NICKNAME, CONTENT, MEMBER),
+                new Post(TITLE, NICKNAME, CONTENT, MEMBER),
+                new Post(TITLE, NICKNAME, CONTENT, MEMBER),
+                new Post(TITLE, NICKNAME, CONTENT, MEMBER)
         );
-        Pageable pageable = PageRequest.of(1, 10, Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(1, 5, Sort.Direction.DESC, "id");
         Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
 
         given(postRepository.findAll(any(Pageable.class))).willReturn(postPage);
@@ -108,16 +106,13 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글을 상세 조회한다.")
     void detail_test() {
-        Member member = new Member("민수쿤", "yoonms0617", "1q2w3e4r!");
-        Post post = new Post("title", member.getNickname(), "content", member);
-
-        given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+        given(postRepository.findById(anyLong())).willReturn(Optional.of(POST));
 
         PostDetailResponse response = postService.detail(1L);
 
-        assertThat(response.getTitle()).isEqualTo(post.getTitle());
-        assertThat(response.getWriter()).isEqualTo(post.getWriter());
-        assertThat(response.getContent()).isEqualTo(post.getContent());
+        assertThat(response.getTitle()).isEqualTo(TITLE);
+        assertThat(response.getWriter()).isEqualTo(NICKNAME);
+        assertThat(response.getContent()).isEqualTo(CONTENT);
         then(postRepository).should(atLeastOnce()).findById(anyLong());
     }
 

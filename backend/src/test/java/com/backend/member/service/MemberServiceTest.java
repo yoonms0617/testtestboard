@@ -2,7 +2,6 @@ package com.backend.member.service;
 
 import com.backend.member.domain.Member;
 import com.backend.member.dto.MemberProfileResponse;
-import com.backend.member.dto.MemberSignupRequest;
 import com.backend.member.exception.DuplicateNicknameException;
 import com.backend.member.exception.DuplicateUsernameException;
 import com.backend.member.exception.NotFoundMemberException;
@@ -16,13 +15,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static com.backend.support.fixture.MemberFixture.ENCODED_PASSWORD;
+import static com.backend.support.fixture.MemberFixture.MEMBER;
+import static com.backend.support.fixture.MemberFixture.NICKNAME;
+import static com.backend.support.fixture.MemberFixture.USERNAME;
+import static com.backend.support.fixture.MemberFixture.VALID_SIGNUP_REQUEST;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -32,10 +37,6 @@ import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-
-    private static final String NICKNAME = "민수쿤";
-    private static final String USERNAME = "yoonms0617";
-    private static final String PASSWORD = "1q2w3e4r!";
 
     @Mock
     private MemberRepository memberRepository;
@@ -49,16 +50,12 @@ class MemberServiceTest {
     @Test
     @DisplayName("회원가입을 한다.")
     void signup_test() {
-        MemberSignupRequest request = new MemberSignupRequest(NICKNAME, USERNAME, PASSWORD);
-        String encoded = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(PASSWORD);
-        Member member = new Member(NICKNAME, USERNAME, encoded);
-
         given(memberRepository.existsByNickname(anyString())).willReturn(false);
         given(memberRepository.existsByUsername(anyString())).willReturn(false);
-        given(passwordEncoder.encode(anyString())).willReturn(encoded);
-        given(memberRepository.save(any(Member.class))).willReturn(member);
+        given(passwordEncoder.encode(anyString())).willReturn(ENCODED_PASSWORD);
+        given(memberRepository.save(any(Member.class))).willReturn(MEMBER);
 
-        memberService.signup(request);
+        memberService.signup(VALID_SIGNUP_REQUEST);
 
         then(memberRepository).should(atLeastOnce()).existsByNickname(anyString());
         then(memberRepository).should(atLeastOnce()).existsByUsername(anyString());
@@ -69,11 +66,9 @@ class MemberServiceTest {
     @Test
     @DisplayName("닉네임이 중복되면 예외가 발생한다.")
     void signup_duplicate_nickname_test() {
-        MemberSignupRequest request = new MemberSignupRequest(NICKNAME, USERNAME, PASSWORD);
-
         given(memberRepository.existsByNickname(anyString())).willReturn(true);
 
-        assertThatThrownBy(() -> memberService.signup(request))
+        assertThatThrownBy(() -> memberService.signup(VALID_SIGNUP_REQUEST))
                 .isInstanceOf(DuplicateNicknameException.class);
 
         then(memberRepository).should(atLeastOnce()).existsByNickname(anyString());
@@ -85,12 +80,10 @@ class MemberServiceTest {
     @Test
     @DisplayName("아이디가 중복되면 예외가 발생한다.")
     void signup_duplicate_username_test() {
-        MemberSignupRequest request = new MemberSignupRequest(NICKNAME, USERNAME, PASSWORD);
-
         given(memberRepository.existsByNickname(anyString())).willReturn(false);
         given(memberRepository.existsByUsername(anyString())).willReturn(true);
 
-        assertThatThrownBy(() -> memberService.signup(request))
+        assertThatThrownBy(() -> memberService.signup(VALID_SIGNUP_REQUEST))
                 .isInstanceOf(DuplicateUsernameException.class);
 
         then(memberRepository).should(atLeastOnce()).existsByNickname(anyString());
@@ -102,14 +95,12 @@ class MemberServiceTest {
     @Test
     @DisplayName("아이디로 회원 정보를 조회한다.")
     void profile_test() {
-        Member member = new Member(NICKNAME, USERNAME, PASSWORD);
-
-        given(memberRepository.findByUsername(anyString())).willReturn(Optional.of(member));
+        given(memberRepository.findByUsername(anyString())).willReturn(Optional.of(MEMBER));
 
         MemberProfileResponse response = memberService.profile(USERNAME);
 
-        assertThat(response.getUsername()).isEqualTo(member.getUsername());
-        assertThat(response.getNickname()).isEqualTo(member.getNickname());
+        assertThat(response.getUsername()).isEqualTo(USERNAME);
+        assertThat(response.getNickname()).isEqualTo(NICKNAME);
         then(memberRepository).should(atLeastOnce()).findByUsername(anyString());
     }
 

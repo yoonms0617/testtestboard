@@ -27,6 +27,7 @@ public class UnAuthorizedHandler implements AuthenticationEntryPoint {
         ErrorType errorType = ErrorType.findByCode(code);
         ErrorResponse errorResponse = ErrorResponse.of(errorType);
         response.setCharacterEncoding("utf-8");
+        response.setStatus(errorResponse.getStatus());
         objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }
 
