@@ -10,14 +10,14 @@ export default {
 
 <style>
 @font-face {
-  font-family: "GangwonEdu_OTFBoldA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff") format("woff");
+  font-family: "Dovemayo_gothic";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.1/Dovemayo_gothic.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
 }
 
 * {
-  font-family: "GangwonEdu_OTFBoldA", serif;
+  font-family: "Dovemayo_gothic", serif;
 }
 
 input {

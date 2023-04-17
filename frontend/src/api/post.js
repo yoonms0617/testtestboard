@@ -1,12 +1,11 @@
 import Axios from "axios";
 
-const BASE_URL = process.env.VUE_APP_BASE_URL;
 const ACCESS_TOKEN_KEY = process.env.VUE_APP_ACCESS_TOKEN_KEY;
 
 const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
 const axios = Axios.create({
-  baseURL: BASE_URL,
+  baseURL: process.env.VUE_APP_BASE_URL,
   withCredentials: true,
 });
 
@@ -29,8 +28,6 @@ const POST = {
       },
     });
   },
-  updateRequest() {},
-  deleteRequest() {},
 };
 
 export { POST };
