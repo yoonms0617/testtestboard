@@ -55,14 +55,17 @@ public class PostController {
     @PutMapping("/update/{postNum}")
     @Secured("ROLE_MEMBER")
     public ResponseEntity<Void> update(@PathVariable("postNum") Long postNum,
+                                       @AuthenticationPrincipal LoginMember loginMember,
                                        @Valid @RequestBody PostUpdateRequest request) {
-        postService.update(postNum, request);
+        postService.update(postNum, loginMember.getNickname(), request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{postNum}")
-    public ResponseEntity<Void> delete(@PathVariable("postNum") Long postNum) {
-        postService.delete(postNum);
+    @Secured("ROLE_MEMBER")
+    public ResponseEntity<Void> delete(@PathVariable("postNum") Long postNum,
+                                       @AuthenticationPrincipal LoginMember loginMember) {
+        postService.delete(postNum, loginMember.getNickname());
         return ResponseEntity.ok().build();
     }
 
