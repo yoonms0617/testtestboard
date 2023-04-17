@@ -7,7 +7,10 @@
           &nbsp;게시판
         </span>
       </router-link>
-      <ul class="nav nav-pills" v-if="isLogin">
+      <ul class="nav nav-pills d-flex align-items-center" v-if="authStore.isLogin">
+        <li class="nav-item">
+          <span>{{ authStore.getNickname }}</span>
+        </li>
         <li class="nav-item">
           <button type="button" class="btn btn-link text-decoration-none" @click="logout">로그아웃</button>
         </li>
@@ -24,20 +27,15 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex";
+<script setup>
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
 
-export default {
-  name: "BaseNavigation",
-  computed: {
-    ...mapGetters(["isLogin"]),
-  },
-  methods: {
-    ...mapActions(["clearToken"]),
-    logout() {
-      this.clearToken();
-      this.$router.push("/");
-    },
-  },
-};
+const router = useRouter();
+const authStore = useAuthStore();
+
+function logout() {
+  authStore.logout();
+  router.push("/");
+}
 </script>

@@ -11,7 +11,7 @@
             <div>
               <small class="text-muted">{{ post.createdAt }}</small>
             </div>
-            <div v-if="isLogin">
+            <div v-if="post.writer === authStore.getNickname">
               <button class="btn btn-sm btn-secondary me-2">수정</button>
               <button class="btn btn-sm btn-danger">삭제</button>
             </div>
@@ -29,52 +29,41 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import BaseNavigation from "@/components/BaseNavigation.vue";
+
 import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
-import BaseNavigation from "@/components/BaseNavigation.vue";
-import { POST } from "@/api/post";
-import { mapGetters } from "vuex";
 
-export default {
-  name: "DetailView",
-  components: {
-    BaseNavigation,
-  },
-  data() {
-    return {
-      viewer: "",
-      post: {
-        title: "",
-        writer: "",
-        createdAt: "",
-      },
-    };
-  },
-  computed: {
-    ...mapGetters(["isLogin"]),
-  },
-  mounted() {
-    this.postDetail();
-    this.viewer = new Viewer({
-      el: document.querySelector("#viewer"),
-      height: "600px",
-      initialValue: "<h1>Hello world!!</h1>",
-    });
-  },
-  methods: {
-    postDetail() {
-      const postNum = this.$route.params.postNum;
-      POST.detailRequest(postNum).then((res) => {
-        const post = res.data;
-        this.post.title = post.title;
-        this.post.writer = post.writer;
-        this.post.createdAt = post.createdAt;
-        this.viewer.setMarkdown(post.content);
-      });
-    },
-  },
-};
+import { useRoute } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
+import { onMounted, ref } from "vue";
+import { POST } from "@/api/post";
+
+const route = useRoute();
+const authStore = useAuthStore();
+
+let viewer = null;
+const post = ref({});
+
+onMounted(() => {
+  setUpViewer();
+  postDetail();
+});
+
+function setUpViewer() {
+  viewer = new Viewer({
+    el: document.querySelector("#viewer"),
+  });
+}
+
+function postDetail() {
+  const postNum = route.params.postNum;
+  POST.detailRequest(postNum).then((res) => {
+    post.value = res.data;
+    viewer.setMarkdown(post.value.content);
+  });
+}
 </script>
 
 <style>
