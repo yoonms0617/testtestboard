@@ -1,6 +1,7 @@
 package com.backend.post.service;
 
 import com.backend.global.error.exception.ErrorType;
+import com.backend.global.security.exception.AccessDeniedException;
 import com.backend.member.domain.Member;
 import com.backend.member.exception.NotFoundMemberException;
 import com.backend.member.repository.MemberRepository;
@@ -56,17 +57,25 @@ public class PostService {
     }
 
     @Transactional
-    public void update(Long postNum, PostUpdateRequest request) {
+    public void update(Long postNum, String nickname, PostUpdateRequest request) {
         Post post = postRepository.findById(postNum)
                 .orElseThrow(() -> new NotFoundPostException(ErrorType.NOT_FOUND_POST));
+        checkPostOwner(nickname, post.getWriter());
         post.update(request.getTitle(), request.getContent());
     }
 
     @Transactional
-    public void delete(Long postNum) {
+    public void delete(Long postNum, String nickname) {
         Post post = postRepository.findById(postNum)
                 .orElseThrow(() -> new NotFoundPostException(ErrorType.NOT_FOUND_POST));
+        checkPostOwner(nickname, post.getWriter());
         postRepository.delete(post);
+    }
+
+    private void checkPostOwner(String nickname, String writer) {
+        if (!nickname.equals(writer)) {
+            throw new AccessDeniedException(ErrorType.ACCESS_DENIED.getCode());
+        }
     }
 
 }
