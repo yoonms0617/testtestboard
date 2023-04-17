@@ -14,6 +14,7 @@ public enum ErrorType {
     BAD_CREDENTIALS("ERRA001", 400, "아이디 또는 비밀번호를 잘못 입력했습니다."),
     INVALID_TOKEN("ERRA002", 401, "토큰이 유효하지 않습니다."),
     EXPIRED_TOKEN("ERRA003", 401, "토큰이 만료되었습니다."),
+    ACCESS_DENIED("ERRA004", 403, "권한이 없습니다."),
 
     DUPLICATE_NICKNAME("ERRM001", 409, "사용 중인 닉네임입니다."),
     DUPLICATE_USERNAME("ERRM002", 409, "사용 중인 아이디입니다."),
