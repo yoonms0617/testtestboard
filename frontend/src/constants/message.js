@@ -1,5 +1,5 @@
 const CLIENT_MESSAGE = {
-  REGEXP_NICKNAME: "3 ~ 20자 사이의 한글, 영문 대/소문자, 숫자를 사용해 주세요.",
+  REGEXP_NICKNAME: "3 ~ 10자 사이의 한글, 영문 대/소문자, 숫자를 사용해 주세요.",
   REGEXP_USERNAME: "8 ~ 16자 사이의 영문 소문자, 숫자를 사용해 주세요.",
   REGEXP_PASSWORD: "8 ~ 16자 사이의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.",
   NOT_MATCH_PASSWORD: "비밀번호가 일치하지 않습니다.",
