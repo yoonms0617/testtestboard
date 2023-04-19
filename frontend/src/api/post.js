@@ -28,6 +28,14 @@ const POST = {
       },
     });
   },
+  updateRequest(data, postNum) {
+    return axios.put("/api/post/update/" + postNum, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    });
+  },
 };
 
 export { POST };
