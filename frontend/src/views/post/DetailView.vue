@@ -12,7 +12,7 @@
               <small class="text-muted">{{ post.createdAt }}</small>
             </div>
             <div v-if="post.writer === authStore.getNickname">
-              <button class="btn btn-sm btn-secondary me-2">수정</button>
+              <router-link :to="`/post/update/${post.postNum}`" class="btn btn-sm btn-secondary me-2">수정</router-link>
               <button class="btn btn-sm btn-danger">삭제</button>
             </div>
           </div>
@@ -37,7 +37,8 @@ import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
+
 import { POST } from "@/api/post";
 
 const route = useRoute();

@@ -4,6 +4,8 @@ import LoginView from "@/views/member/LoginView.vue";
 import SignupView from "@/views/member/SignupView.vue";
 import WriteView from "@/views/post/WriteView.vue";
 import DetailView from "@/views/post/DetailView.vue";
+import UpdateView from "@/views/post/UpdateView.vue";
+
 import { CLIENT_MESSAGE } from "@/constants/message";
 
 const ACCESS_TOKEN_KEY = process.env.VUE_APP_ACCESS_TOKEN_KEY;
@@ -57,6 +59,11 @@ const routes = [
     path: "/post/detail/:postNum",
     name: "detail",
     component: DetailView,
+  },
+  {
+    path: "/post/update/:postNum",
+    name: "update",
+    component: UpdateView,
   },
 ];
 

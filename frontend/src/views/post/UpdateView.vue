@@ -4,12 +4,12 @@
     <div class="write-form">
       <form role="form" class="mt-5">
         <div class="form-floating mb-3">
-          <input v-model="title" type="text" class="form-control" placeholder="제목" />
+          <input v-model="post.title" type="text" class="form-control" placeholder="제목" />
           <label>제목</label>
         </div>
         <div id="editor"></div>
         <div class="mt-3 text-end">
-          <button type="button" @click="write" class="btn btn-lg btn-primary me-3">작성</button>
+          <button type="button" @click="postUpdate()" class="btn btn-lg btn-primary me-3">수정</button>
           <router-link to="/" class="btn btn-lg btn-danger">취소</router-link>
         </div>
       </form>
@@ -24,19 +24,21 @@ import Editor from "@toast-ui/editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 
 import { CLIENT_MESSAGE } from "@/constants/message";
 import { POST } from "@/api/post";
 
-const router = useRouter();
+let route = useRoute();
+let router = useRouter();
 
 let editor = null;
-const title = ref("");
+let post = ref({});
 
 onMounted(() => {
   setUpEditor();
+  postDetail();
 });
 
 function setUpEditor() {
@@ -55,8 +57,17 @@ function setUpEditor() {
   editor.removeToolbarItem("task");
 }
 
-function write() {
-  if (title.value.trim() === "") {
+function postDetail() {
+  const postNum = getPostnumFromQuery();
+  POST.detailRequest(postNum).then((res) => {
+    post.value = res.data;
+    console.log(res.data);
+    editor.setHTML(post.value.content);
+  });
+}
+
+function postUpdate() {
+  if (post.value.title.trim() === "") {
     alert(CLIENT_MESSAGE.INPUT_POST_TITLE);
     return;
   }
@@ -64,23 +75,17 @@ function write() {
     alert(CLIENT_MESSAGE.INPUT_POST_CONTNET);
     return;
   }
-  const post = {
-    title: title.value.trim().replaceAll(/\s{2,}/g, " "),
+  const data = {
+    title: post.value.title.trim().replaceAll(/\s{2,}/g, " "),
     content: editor.getHTML(),
   };
-  POST.writeRequest(post).then(() => {
-    router.push("/");
+  const postNum = getPostnumFromQuery();
+  POST.updateRequest(data, postNum).then(() => {
+    router.replace("/post/detail/" + postNum);
   });
 }
+
+function getPostnumFromQuery() {
+  return route.params.postNum;
+}
 </script>
-
-<style>
-.write-form {
-  max-width: 900px;
-  margin: auto;
-}
-
-.toastui-editor-contents hr {
-  border-top: 1px solid black !important;
-}
-</style>

@@ -47,7 +47,6 @@ const SIGNUP_VALIDATION = {
         .then((res) => {
           if (res.data === "Y") {
             validate.nickname = true;
-            console.log(validate.nickname);
             message.nickname = CLIENT_MESSAGE.GOOD_NICKNAME;
           }
         })
