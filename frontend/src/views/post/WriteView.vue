@@ -4,7 +4,7 @@
     <div class="write-form">
       <form role="form" class="mt-5">
         <div class="form-floating mb-3">
-          <input v-model="post.title" type="text" class="form-control" placeholder="제목" />
+          <input v-model="title" type="text" class="form-control" placeholder="제목" />
           <label>제목</label>
         </div>
         <div id="editor"></div>
@@ -17,65 +17,61 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import BaseNavigation from "@/components/BaseNavigation.vue";
+
 import Editor from "@toast-ui/editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
-import BaseNavigation from "@/components/BaseNavigation.vue";
-import { CLIENT_MESSAGE } from "@/constants/message.js";
+
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+
+import { CLIENT_MESSAGE } from "@/constants/message";
 import { POST } from "@/api/post";
 
-export default {
-  name: "WriteView",
-  components: {
-    BaseNavigation,
-  },
-  data() {
-    return {
-      editor: "",
-      post: {
-        title: "",
-        content: "",
-      },
-    };
-  },
-  mounted() {
-    this.editor = new Editor({
-      el: document.querySelector("#editor"),
-      height: "400px",
-      previewStyle: "vertical",
-      initialEditType: "wysiwyg",
-      hideModeSwitch: true,
-      autofocus: false,
-      language: "ko-KR",
-    });
-    this.editor.removeToolbarItem("image");
-    this.editor.removeToolbarItem("indent");
-    this.editor.removeToolbarItem("outdent");
-    this.editor.removeToolbarItem("task");
-  },
-  methods: {
-    write() {
-      const title = this.post.title;
-      const content = this.editor.getHTML();
-      if (title === "") {
-        alert(CLIENT_MESSAGE.INPUT_POST_TITLE);
-        return;
-      }
-      if (content === "<p><br></p>") {
-        alert(CLIENT_MESSAGE.INPUT_POST_CONTNET);
-        return;
-      }
-      const data = {
-        title: this.post.title,
-        content: content,
-      };
-      POST.writeRequest(data).then(() => {
-        this.$router.push("/");
-      });
-    },
-  },
-};
+const router = useRouter();
+
+let editor = null;
+const title = ref("");
+
+onMounted(() => {
+  setUpEditor();
+});
+
+function setUpEditor() {
+  editor = new Editor({
+    el: document.querySelector("#editor"),
+    height: "400px",
+    previewStyle: "vertical",
+    initialEditType: "wysiwyg",
+    hideModeSwitch: true,
+    autofocus: false,
+    language: "ko-KR",
+  });
+  editor.removeToolbarItem("image");
+  editor.removeToolbarItem("indent");
+  editor.removeToolbarItem("outdent");
+  editor.removeToolbarItem("task");
+}
+
+function write() {
+  if (title.value.trim() === "") {
+    alert(CLIENT_MESSAGE.INPUT_POST_TITLE);
+    return;
+  }
+  if (editor.getHTML() === "<p><br></p>") {
+    alert(CLIENT_MESSAGE.INPUT_POST_CONTNET);
+    return;
+  }
+  const post = {
+    title: title.value.trim().replaceAll(/\s{2,}/g, " "),
+    content: editor.getHTML(),
+  };
+  POST.writeRequest(post).then(() => {
+    router.push("/");
+  });
+}
 </script>
 
 <style>
