@@ -7,7 +7,7 @@ const CLIENT_MESSAGE = {
   GOOD_USERNAME: "사용 가능한 아이디입니다.",
   GOOD_PASSWORD: "사용 가능한 비밀번호입니다.",
   GOOD_CONFIRM: "비밀번호가 일치합니다.",
-  REQUIRE_LOGIN: "로그인이 필요합니다.",
+  REQUIRE_LOGIN: "로그인 후 이용할 수 있는 서비스입니다. 로그인하시겠습니까?.",
   INPUT_POST_TITLE: "제목을 입력해 주세요.",
   INPUT_POST_CONTNET: "내용을 입력해 주세요.",
 };
